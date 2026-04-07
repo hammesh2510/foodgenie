@@ -22,6 +22,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['CUSTOMER', 'OWNER', 'ADMIN'],
     default: 'CUSTOMER'
+  },
+  imageUrl: {
+    type: String,
+    default: ''
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  categories: {
+    type: [String],
+    default: []
   }
 }, { timestamps: true });
 

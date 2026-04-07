@@ -1,16 +1,48 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import HeroSection from '../../components/customer/HeroSection';
 import CategoryFilters from '../../components/customer/CategoryFilters';
 import RestaurantCard from '../../components/customer/RestaurantCard';
-import { mockRestaurants, mockCategories } from '../../data/mockData';
+import { mockCategories } from '../../data/mockData';
+import { Loader } from 'lucide-react';
+import { API_URL } from '../../config';
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [dbRestaurants, setDbRestaurants] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/restaurants`);
+        if (response.ok) {
+          const data = await response.json();
+          // Map DB user fields to what RestaurantCard expects
+          const mapped = data.map(r => ({
+            id: r._id,
+            name: r.name,
+            imageUrl: r.imageUrl ? `${API_URL}${r.imageUrl}` : 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=60',
+            rating: 4.5,
+            deliveryTime: '30-45 min',
+            deliveryFee: 2.99,
+            minOrder: 15,
+            categories: r.categories && r.categories.length > 0 ? r.categories : ['Fast Food'] // default if empty
+          }));
+          setDbRestaurants(mapped);
+        }
+      } catch (error) {
+        console.error('Error fetching active restaurants:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRestaurants();
+  }, []);
 
   // Filter Logic
   const filteredRestaurants = useMemo(() => {
-    return mockRestaurants.filter((restaurant) => {
+    return dbRestaurants.filter((restaurant) => {
       // 1. Text Search Filter
       const matchesSearch = 
         restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -54,7 +86,11 @@ const Home = () => {
           <p className="text-sm text-gray-500 font-medium">{filteredRestaurants.length} places found</p>
         </div>
 
-        {filteredRestaurants.length > 0 ? (
+        {loading ? (
+          <div className="py-20 flex justify-center text-orange-500">
+             <Loader className="animate-spin h-10 w-10 border-2 border-transparent bg-orange-100 rounded-full p-2" />
+          </div>
+        ) : filteredRestaurants.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredRestaurants.map((restaurant) => (
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />

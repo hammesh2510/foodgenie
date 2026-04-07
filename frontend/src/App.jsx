@@ -6,9 +6,11 @@ import AuthLayout from './layouts/AuthLayout';
 import ProtectedRoutes from './routes/ProtectedRoutes';
 
 import Home from './pages/customer/Home';
+import Profile from './pages/customer/Profile';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import OwnerDashboard from './pages/partner/Dashboard';
+import MenuManagement from './pages/partner/MenuManagement';
 import AdminDashboard from './pages/admin/Dashboard';
 
 // --- Placeholder Pages ---
@@ -29,13 +31,16 @@ function App() {
         <Route element={<CustomerLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />
+          <Route element={<ProtectedRoutes />}>
+            <Route path="/profile" element={<Profile />} />
+          </Route>
         </Route>
 
         {/* RESTAURANT OWNER ROUTES */}
         <Route element={<ProtectedRoutes allowedRoles={['OWNER']} />}>
           <Route path="/partner" element={<RestaurantLayout />}>
             <Route path="dashboard" element={<OwnerDashboard />} />
-            <Route path="menu" element={<div>Manage Menu Items</div>} />
+            <Route path="menu" element={<MenuManagement />} />
             <Route path="orders" element={<div>Active Orders incoming...</div>} />
             <Route index element={<Navigate to="dashboard" replace />} />
           </Route>

@@ -1,17 +1,21 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
-// In a real app, this would come from a Context or Redux store
-// For now, we use a simple mock object to test auth routing
 const ProtectedRoutes = ({ allowedRoles = [] }) => {
-  // Mock current user object
-  // Set role to 'CUSTOMER', 'OWNER', or 'ADMIN' to test different views
-  const currentUser = {
-    isAuthenticated: true,
-    role: 'CUSTOMER' // Note: Change this to 'OWNER' or 'ADMIN' to access those portals
-  };
+  const token = localStorage.getItem('token');
+  const userStr = localStorage.getItem('user');
+  
+  let currentUser = null;
+  if (userStr) {
+    try {
+      currentUser = JSON.parse(userStr);
+    } catch (e) {
+      console.error('Failed to parse user from localStorage');
+    }
+  }
 
-  if (!currentUser.isAuthenticated) {
+  // If there's no token or no user, redirect to login
+  if (!token || !currentUser) {
     return <Navigate to="/login" replace />;
   }
 

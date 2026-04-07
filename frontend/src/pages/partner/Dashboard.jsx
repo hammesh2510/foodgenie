@@ -1,5 +1,6 @@
-import React from 'react';
-import { DollarSign, ShoppingBag, Users, TrendingUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { DollarSign, ShoppingBag, Users, TrendingUp, Upload, Image as ImageIcon, Loader } from 'lucide-react';
+import { API_URL } from '../../config';
 
 const StatCard = ({ title, value, icon: Icon, trend }) => (
   <div className="bg-white dark:bg-dark-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-dark-700">
@@ -20,11 +21,87 @@ const StatCard = ({ title, value, icon: Icon, trend }) => (
 );
 
 export default function OwnerDashboard() {
+  const [user, setUser] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) setUser(JSON.parse(userStr));
+  }, []);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      // 1. Upload image to disk
+      const uploadRes = await fetch(`${API_URL}/api/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!uploadRes.ok) throw new Error('Failed to upload image');
+      const { imageUrl } = await uploadRes.json();
+
+      // 2. Update user profile with new imageUrl
+      const updateRes = await fetch(`${API_URL}/api/users/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ imageUrl })
+      });
+
+      if (!updateRes.ok) throw new Error('Failed to update profile');
+      const updatedUser = await updateRes.json();
+      
+      // Update local storage and state
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      alert('Profile picture updated successfully!');
+      
+    } catch (error) {
+      console.error(error);
+      alert('Error updating image. Is the backend running?');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  if (!user) return null;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in text-left text-gray-900">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Restaurant Dashboard</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">Welcome back! Here's what's happening at Pizza Palace today.</p>
+      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Restaurant Dashboard</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Welcome back! Here's what's happening at {user.name} today.</p>
+        </div>
+        
+        {/* Profile Picture Upload Section */}
+        <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+           <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-2 border-orange-200 shrink-0">
+             {user.imageUrl ? (
+               <img src={`${API_URL}${user.imageUrl}`} alt="Profile" className="h-full w-full object-cover" />
+             ) : (
+               <ImageIcon className="h-6 w-6 text-gray-400" />
+             )}
+           </div>
+           <div>
+             <h3 className="font-semibold text-gray-900 mb-1">Restaurant Photo</h3>
+             <label className="cursor-pointer inline-flex items-center px-3 py-1.5 bg-orange-50 text-orange-600 rounded-lg text-sm font-medium hover:bg-orange-100 transition-colors">
+               {uploading ? <Loader className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
+               {uploading ? 'Uploading...' : 'Upload Image'}
+               <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
+             </label>
+           </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
