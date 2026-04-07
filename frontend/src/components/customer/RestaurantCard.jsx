@@ -1,9 +1,10 @@
 import React from 'react';
 import { Star, Clock, Truck } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const RestaurantCard = ({ restaurant }) => {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group cursor-pointer flex flex-col h-full text-left">
+    <Link to={`/restaurant/${restaurant.id}`} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group cursor-pointer flex flex-col h-full text-left">
       <div className="relative h-48 overflow-hidden">
         <img 
           src={restaurant.image} 
@@ -41,7 +42,7 @@ const RestaurantCard = ({ restaurant }) => {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

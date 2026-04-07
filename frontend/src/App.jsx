@@ -12,6 +12,7 @@ import Register from './pages/auth/Register';
 import OwnerDashboard from './pages/partner/Dashboard';
 import MenuManagement from './pages/partner/MenuManagement';
 import AdminDashboard from './pages/admin/Dashboard';
+import RestaurantDetails from './pages/customer/RestaurantDetails';
 
 // --- Placeholder Pages ---
 const Search = () => <div className="text-center mt-10 text-2xl font-semibold">Search Restaurants 🔍</div>;
@@ -31,6 +32,7 @@ function App() {
         <Route element={<CustomerLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />
+          <Route path="/restaurant/:id" element={<RestaurantDetails />} />
           <Route element={<ProtectedRoutes />}>
             <Route path="/profile" element={<Profile />} />
           </Route>
