@@ -3,25 +3,33 @@ import { Search } from 'lucide-react';
 
 const HeroSection = ({ searchQuery, setSearchQuery }) => {
   return (
-    <div className="relative bg-orange-600 rounded-2xl overflow-hidden mb-12 text-left">
-      {/* Decorative pattern (mocked with gradient) */}
-      <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-500 opacity-90"></div>
+    <div className="relative rounded-3xl overflow-hidden mb-16 text-left shadow-2xl h-[500px] flex items-center justify-center animate-fade-in group">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 group-hover:scale-105"
+        style={{ backgroundImage: `url('/hero.png')` }}
+      ></div>
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent"></div>
       
-      <div className="relative px-6 py-16 sm:px-12 sm:py-24 md:py-32 flex flex-col items-center text-center">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight mb-6 mt-0">
-          Hungry? We got you.
+      <div className="relative px-6 sm:px-12 flex flex-col justify-end h-full w-full max-w-5xl mx-auto pb-16 animate-slide-up">
+        <span className="inline-block px-4 py-1.5 rounded-full bg-brand-500/20 text-brand-300 backdrop-blur-md border border-brand-500/30 text-sm font-semibold mb-4 w-max">
+          🚀 Delivered in 30 mins
+        </span>
+        <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white tracking-tight mb-4 mt-0 drop-shadow-md">
+          Craving something <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-brand-500">delicious?</span>
         </h1>
-        <p className="max-w-2xl text-lg sm:text-xl text-orange-100 mb-10">
-          Discover the best local restaurants, fast food, and healthy options delivered straight to your door.
+        <p className="max-w-2xl text-lg sm:text-2xl text-gray-200 mb-10 font-light drop-shadow">
+          Discover the top local restaurants and exclusive artisan dishes delivered right to your door.
         </p>
         
         <div className="w-full max-w-2xl relative">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <Search className="h-6 w-6 text-gray-400" />
+          <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+            <Search className="h-6 w-6 text-brand-500" />
           </div>
           <input
             type="text"
-            className="block w-full pl-12 pr-4 py-4 rounded-full text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-4 focus:ring-orange-300 focus:ring-opacity-50 text-lg shadow-lg"
+            className="block w-full pl-14 pr-6 py-5 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white/20 text-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all"
             placeholder="Search for restaurants, cuisines, or dishes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
